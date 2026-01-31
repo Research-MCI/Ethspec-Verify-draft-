@@ -10,10 +10,10 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "Riyanarto Sarno" },
-    { name = "Kelly Rossa Sungkono" },
-    { name = "Agus Tri Haryono" },
-    { name = "Kurnia Cahya Febryanto" },
+    { name = "Kurnia Cahya Febryanto", email = "kurniacf17@gmail.com" },
+]
+maintainers = [
+    { name = "IIM Lab (Intelligent Information Management)", email = "labiim@protonmail.com" },
 ]
 keywords = [
     "ethereum",

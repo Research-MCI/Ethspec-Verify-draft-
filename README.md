@@ -1,6 +1,6 @@
 # Ethereum Protocol Specification Compliance Verifier
 
-[![CI](https://github.com/your-org/eth-spec-compliance-verifier/workflows/CI/badge.svg)](https://github.com/your-org/eth-spec-compliance-verifier/actions)
+[![CI](https://github.com/IIMLab-ITS/eth-spec-compliance-verifier/workflows/CI/badge.svg)](https://github.com/IIMLab-ITS/eth-spec-compliance-verifier/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -36,7 +36,7 @@ This framework addresses the challenge of verifying compliance between Ethereum 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/eth-spec-compliance-verifier.git
+git clone https://github.com/IIMLab-ITS/eth-spec-compliance-verifier.git
 cd eth-spec-compliance-verifier
 
 # Create virtual environment
@@ -80,7 +80,7 @@ on:
 
 jobs:
   compliance:
-    uses: your-org/eth-spec-compliance-verifier/.github/workflows/compliance-check.yml@main
+    uses: IIMLab-ITS/eth-spec-compliance-verifier/.github/workflows/compliance-check.yml@main
     with:
       fork: cancun
     secrets:
@@ -218,6 +218,15 @@ eth-spec-compliance-verifier/
 └── docs/                        # Documentation
 ```
 
+## Contributors
+
+<a href="https://github.com/kurniacf">
+  <img src="https://github.com/kurniacf.png" width="50" height="50" alt="Kurnia Cahya Febryanto" style="border-radius: 50%;">
+</a>
+
+- [@kurniacf](https://github.com/kurniacf) - Kurnia Cahya Febryanto
+- *More contributors to be added*
+
 ## Contributing
 
 Contributions are welcome! Please read our Contributing Guidelines before submitting a PR.
@@ -226,19 +235,7 @@ Contributions are welcome! Please read our Contributing Guidelines before submit
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+---
 
-This project is developed by the Laboratory of Business-Enterprise (LBE), Institut Teknologi Sepuluh Nopember (ITS), Surabaya, Indonesia.
-
-## Citation
-
-If you use this tool in your research, please cite:
-
-```bibtex
-@software{eth_spec_compliance_verifier,
-  title = {Ethereum Protocol Specification Compliance Verifier},
-  author = {Sarno, Riyanarto and Sungkono, Kelly Rossa and Haryono, Agus Tri and Febryanto, Kurnia Cahya},
-  year = {2025},
-  url = {https://github.com/your-org/eth-spec-compliance-verifier}
-}
-```
+**IIM Lab (Intelligent Information Management) / Lab MCI (Manajemen Cerdas Informasi)**
+Departemen Informatika, Institut Teknologi Sepuluh Nopember (ITS), Surabaya, Indonesia
