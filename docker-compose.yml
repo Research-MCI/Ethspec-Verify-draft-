@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # ==========================================================================
+  # Main Application
+  # ==========================================================================
+  verifier:
+    build:
+      context: .
+      target: production
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env:ro
+    environment:
+      - CHROMADB_PATH=/app/data/chromadb
+      - NEO4J_URI=bolt://neo4j:7687
+    depends_on:
+      - neo4j
+    networks:
+      - verifier-network
+
+  # ==========================================================================
+  # GitHub Bot Server
+  # ==========================================================================
+  bot:
+    build:
+      context: .
+      target: bot
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env:ro
+      - ./private-key.pem:/app/private-key.pem:ro
+    environment:
+      - CHROMADB_PATH=/app/data/chromadb
+      - NEO4J_URI=bolt://neo4j:7687
+      - HOST=0.0.0.0
+      - PORT=8000
+    depends_on:
+      - neo4j
+    networks:
+      - verifier-network
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Neo4j Knowledge Graph Database
+  # ==========================================================================
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    environment:
+      - NEO4J_AUTH=neo4j/your_neo4j_password_here
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*
+    networks:
+      - verifier-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7474"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================================================
+  # Development Container
+  # ==========================================================================
+  dev:
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/app
+      - pip-cache:/root/.cache/pip
+    environment:
+      - CHROMADB_PATH=/app/data/chromadb
+      - NEO4J_URI=bolt://neo4j:7687
+    depends_on:
+      - neo4j
+    networks:
+      - verifier-network
+    stdin_open: true
+    tty: true
+    profiles:
+      - dev
+
+networks:
+  verifier-network:
+    driver: bridge
+
+volumes:
+  neo4j-data:
+  neo4j-logs:
+  pip-cache:

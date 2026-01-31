@@ -1,0 +1,108 @@
+name: Specification Compliance Check
+
+on:
+  workflow_call:
+    inputs:
+      fork:
+        description: "Ethereum fork version to verify against"
+        required: false
+        default: "cancun"
+        type: string
+      paths:
+        description: "Paths to check (comma-separated)"
+        required: false
+        default: "src/"
+        type: string
+    secrets:
+      GEMINI_API_KEY:
+        required: true
+
+jobs:
+  compliance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install eth-spec-compliance-verifier
+        run: |
+          pip install eth-spec-compliance-verifier
+
+      - name: Get changed files
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep -E '\.py$' | tr '\n' ' ')
+          else
+            FILES="${{ inputs.paths }}"
+          fi
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Run compliance check
+        id: verify
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          eth-verify verify ${{ steps.changed.outputs.files }} \
+            --fork ${{ inputs.fork }} \
+            --output compliance-report.json \
+            --format json
+
+          # Check exit code
+          if [ -f compliance-report.json ]; then
+            STATUS=$(jq -r '.summary.status' compliance-report.json)
+            echo "status=$STATUS" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate PR comment
+        if: github.event_name == 'pull_request'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          eth-verify report compliance-report.json \
+            --output comment.md \
+            --format markdown
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('comment.md', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+      - name: Upload SARIF
+        if: always()
+        run: |
+          eth-verify report compliance-report.json \
+            --output results.sarif \
+            --format sarif
+
+      - name: Upload SARIF to GitHub
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+
+      - name: Check compliance status
+        if: steps.verify.outputs.status == 'FAIL'
+        run: |
+          echo "Compliance check failed"
+          exit 1
