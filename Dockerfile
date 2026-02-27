@@ -44,7 +44,7 @@ ENV PATH=/root/.local/bin:$PATH
 
 # Copy application code
 COPY src/ ./src/
-COPY scripts/ ./scripts/
+
 COPY pyproject.toml .
 
 # Create data directories
@@ -53,6 +53,7 @@ RUN mkdir -p data/specs data/embeddings data/chromadb
 # Set default command
 CMD ["python", "-m", "src.integration.cli.main", "--help"]
 
+RUN mkdir -p data/specs data/embeddings data/chromadb db results documents
 # =============================================================================
 # Development stage
 # =============================================================================
@@ -82,3 +83,10 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Run the bot server
 CMD ["uvicorn", "src.integration.github_bot.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONFAULTHANDLER=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    CHROMA_PERSIST_DIRECTORY=/app/data/chromadb

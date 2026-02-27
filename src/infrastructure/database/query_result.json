@@ -1,0 +1,27 @@
+{
+  "query": "What is BRICS?",
+  "generated_at": "2026-02-23T09:45:28.028190+00:00",
+  "results": [
+    {
+      "id": "brics_0",
+      "text": "Here’s a clear, well-structured essay you can use for school, articles, or general understanding.\n\n---\n\n**What Is BRICS?**\n\nBRICS is an international grouping of major emerging economies that aims to strengthen cooperation in economics, politics, and development. The name **BRICS** is an acronym formed from the first letters of its original member countries: **Brazil, Russia, India, China, and South Africa**. Together, these countries represent a significant portion of the world’s population, la",
+      "source": "brics.txt",
+      "chunk": 0,
+      "distance": 0.46216127276420593
+    },
+    {
+      "id": "brics_4",
+      "text": "centrated in a few Western countries. BRICS emphasizes respect for national sovereignty, non-interference in domestic affairs, and reform of global institutions to better reflect the interests of developing and emerging economies.\n\nIn recent years, BRICS has gained additional attention due to its **expansion efforts** and growing appeal among developing countries. Several nations have expressed interest in joining or cooperating with the group, viewing BRICS as an alternative platform for econom",
+      "source": "brics.txt",
+      "chunk": 4,
+      "distance": 0.5273462533950806
+    },
+    {
+      "id": "brics_5",
+      "text": "iewing BRICS as an alternative platform for economic partnership and political representation. This expansion reflects broader shifts in global power, where emerging economies are seeking greater influence in international decision-making.\n\nIn conclusion, BRICS is more than just an economic acronym; it is a symbol of the rising influence of emerging economies in the global system. Through cooperation in finance, development, and diplomacy, BRICS aims to reshape aspects of global governance and o",
+      "source": "brics.txt",
+      "chunk": 5,
+      "distance": 0.6968048810958862
+    }
+  ]
+}
