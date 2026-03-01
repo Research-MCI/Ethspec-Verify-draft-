@@ -1,8 +1,9 @@
 import hashlib
 import json
 from pathlib import Path
-from src.infrastructure.database.client import get_chroma_client
-from src.infrastructure.database.collection import get_documents_collection
+from ..client import get_chroma_client
+from ..collection import get_documents_collection
+import sys
 
 HASH_STORE = Path("db/file_hashes.json")
 
@@ -81,10 +82,13 @@ def ingest_folder(folder_path: Path):
 
     if updated:
         save_hash_store(store)
-        get_chroma_client().persist()
         print("[DONE] Changes ingested and persisted.")
     else:
         print("[DONE] No changes detected.")
 
 if __name__ == "__main__":
-    ingest_folder(Path("documents"))
+    if len(sys.argv) > 1:
+        folder = Path(sys.argv[1])
+    else:
+        folder = Path("/app/documents")
+    ingest_folder(folder)

@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from src.infrastructure.database.services.search import search_vectors
+from src.infrastructure.database.search import search_vectors
 
 def query(text: str, limit: int = 3) -> dict:
     matches = search_vectors(query=text, limit=limit)

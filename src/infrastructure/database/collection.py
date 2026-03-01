@@ -1,5 +1,5 @@
 import chromadb
-from infrastructure.database.client import get_chroma_client
+from src.infrastructure.database.client import get_chroma_client
 
 COLLECTION_NAME = "documents"
 
