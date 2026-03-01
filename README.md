@@ -218,6 +218,21 @@ eth-spec-compliance-verifier/
 └── docs/                        # Documentation
 ```
 
+## Chroma Database
+Docker Build:
+```
+docker compose down --remove-orphans
+docker compose build
+```
+Run database:
+```
+docker-compose up chroma
+```
+Run Ingestion:
+```
+docker compose run ingestion
+```
+
 ## Contributors
 
 <a href="https://github.com/kurniacf">
