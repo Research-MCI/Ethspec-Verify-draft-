@@ -1,7 +1,6 @@
 import hashlib
 import json
 from pathlib import Path
-from ..client import get_chroma_client
 from ..collection import get_documents_collection
 import sys
 
@@ -25,6 +24,11 @@ def chunk_text(text, chunk_size=500, overlap=50):
 def get_file_hash(path: Path) -> str:
     return hashlib.md5(path.read_bytes()).hexdigest()
 
+def load_json_file(path: Path) -> str:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    # Convert to readable text — adjust based on your JSON shape
+    return json.dumps(data, indent=2)
+
 # -------------------------
 # Hash store
 # -------------------------
@@ -45,8 +49,12 @@ def has_file_changed(filename: str, current_hash: str, store: dict) -> bool:
 # -------------------------
 collection = get_documents_collection()
 
-def add_document_to_collection(path: Path):
-    text = load_text_file(path)
+def add_document_to_collection(path: Path, collection):
+    if path.suffix == ".json":
+        text = load_json_file(path)
+    else:
+        text = load_text_file(path)
+    
     chunks = chunk_text(text)
 
     existing = collection.get(where={"source": path.name})
@@ -68,23 +76,44 @@ def ingest_folder(folder_path: Path):
     store = load_hash_store()
     updated = False
 
-    for file in folder_path.glob("*.txt"):
-        current_hash = get_file_hash(file)
-
-        if not has_file_changed(file.name, current_hash, store):
-            print(f"[SKIP] {file.name} unchanged")
+    for subfolder in folder_path.iterdir():
+        if not subfolder.is_dir():
             continue
 
-        add_document_to_collection(file)
-        store[file.name] = current_hash
-        updated = True
-        print(f"[OK] Ingested {file.name}")
+        collection = get_documents_collection(name=subfolder.name)  # e.g. "invoices", "reports"
+        print(f"[COLLECTION] Using collection: {subfolder.name}")
+
+        for file in subfolder.glob("*"):
+            if file.suffix not in {".txt", ".json"}:
+                continue
+
+            current_hash = get_file_hash(file)
+            store_key = f"{subfolder.name}/{file.name}"  # namespaced key
+
+            if not has_file_changed(store_key, current_hash, store):
+                print(f"  [SKIP] {file.name} unchanged")
+                continue
+
+            add_document_to_collection(file, collection)
+            store[store_key] = current_hash
+            updated = True
+            print(f"  [OK] Ingested {file.name}")
+
+        # After the loop in ingest_folder()
+        for stored_file in list(store.keys()):
+            if not (folder_path / stored_file).exists():
+                existing = collection.get(where={"source": stored_file})
+                if existing["ids"]:
+                    collection.delete(ids=existing["ids"])
+                del store[stored_file]
+                print(f"[DELETED] {stored_file} removed from collection")
 
     if updated:
         save_hash_store(store)
         print("[DONE] Changes ingested and persisted.")
     else:
         print("[DONE] No changes detected.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

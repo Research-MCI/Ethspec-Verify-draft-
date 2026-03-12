@@ -232,6 +232,11 @@ Run Ingestion:
 ```
 docker compose run ingestion
 ```
+Run Query:
+```
+docker compose run query
+```
+
 
 ## Contributors
 
