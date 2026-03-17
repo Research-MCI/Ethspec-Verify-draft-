@@ -95,9 +95,9 @@ services:
     image: chromadb/chroma
     container_name: chroma
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
-      - chroma_data:/chroma/chroma
+     - ./chroma_db:/data 
     networks:
       - verifier-network
 
@@ -109,6 +109,9 @@ services:
     volumes:
       - ./documents:/app/documents
       - ./data:/app/data
+    environment:
+      - CHROMA_HOST=chroma      
+      - CHROMA_PORT=8001
     depends_on:
       - chroma
     networks:
@@ -121,6 +124,9 @@ services:
     command: python -m src.infrastructure.database.query.query
     volumes:
       - ./data:/app/data
+    environment:
+      - CHROMA_HOST=chroma       
+      - CHROMA_PORT=8001
     depends_on:
       - chroma
     networks:
